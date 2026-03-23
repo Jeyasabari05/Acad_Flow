@@ -1,0 +1,126 @@
+.mv-page {
+  min-height: 100vh;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(91, 33, 182, 0.16), transparent 24%),
+    linear-gradient(180deg, #f7f4ff 0%, #eef2ff 100%);
+  font-family: "Outfit", sans-serif;
+}
+
+.mv-shell {
+  width: min(100%, 1360px);
+  margin: 0 auto;
+}
+
+.mv-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #1d0b67 0%, #5b21b6 100%);
+  color: #fff;
+  box-shadow: 0 20px 48px rgba(76, 29, 149, 0.18);
+}
+
+.mv-eyebrow {
+  margin: 0 0 6px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mv-copy h1 {
+  margin: 0;
+  font-size: clamp(1.3rem, 2vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.mv-subtitle {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.mv-back-btn {
+  min-width: 110px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.mv-back-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.mv-frame-wrap,
+.mv-empty {
+  margin-top: 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.mv-frame {
+  width: 100%;
+  height: calc(100vh - 180px);
+  min-height: 720px;
+  border: none;
+  background: #fff;
+}
+
+.mv-empty {
+  padding: 40px 28px;
+  text-align: center;
+}
+
+.mv-empty h2 {
+  margin: 0 0 10px;
+  color: #1e1b4b;
+  font-size: 1.4rem;
+}
+
+.mv-empty p {
+  margin: 0 0 18px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.mv-empty .mv-back-btn {
+  background: #5b21b6;
+  border-color: #5b21b6;
+}
+
+@media (max-width: 768px) {
+  .mv-page {
+    padding: 16px;
+  }
+
+  .mv-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .mv-back-btn {
+    width: 100%;
+  }
+
+  .mv-frame {
+    min-height: 560px;
+    height: calc(100vh - 220px);
+  }
+}

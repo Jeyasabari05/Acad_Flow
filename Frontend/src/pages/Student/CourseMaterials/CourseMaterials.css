@@ -1,117 +1,278 @@
 .cm-page {
-  padding: 28px 24px 60px;
-  max-width: 1100px;
-  margin: 0 auto;
-  font-family: 'Sora', sans-serif;
+  min-height: 100vh;
+  padding: 28px 28px 64px;
+  background:
+    radial-gradient(circle at top left, rgba(92, 53, 217, 0.12), transparent 30%),
+    linear-gradient(180deg, #f6f3ff 0%, #f8fafc 100%);
+  font-family: 'Outfit', 'Sora', sans-serif;
 }
 
-.cm-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.cm-shell {
+  width: min(100%, 1320px);
+  margin: 0 auto;
+}
+
+.cm-back-btn {
   margin-bottom: 16px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid #d8b4fe;
+  background: rgba(255, 255, 255, 0.88);
+  color: #5b21b6;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.cm-back-btn:hover {
+  background: #faf5ff;
+  box-shadow: 0 10px 22px rgba(91, 33, 182, 0.12);
+  transform: translateY(-1px);
+}
+
+.cm-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 26px 28px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #1d0b67 0%, #4c1d95 55%, #6d28d9 100%);
+  box-shadow: 0 20px 48px rgba(76, 29, 149, 0.22);
+  color: #fff;
+  overflow: hidden;
+  position: relative;
+}
+
+.cm-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(255, 255, 255, 0.2), transparent 24%),
+    radial-gradient(circle at 15% 85%, rgba(255, 255, 255, 0.12), transparent 20%);
+  pointer-events: none;
+}
+
+.cm-hero-copy,
+.cm-hero-stat {
+  position: relative;
+  z-index: 1;
 }
 
 .cm-title {
-  margin: 0 0 6px;
-  font-size: 1.6rem;
+  margin: 0 0 10px;
+  font-size: clamp(1.6rem, 2.6vw, 2.35rem);
   font-weight: 800;
-  color: #1e1b4b;
+  letter-spacing: -0.04em;
 }
 
 .cm-sub {
   margin: 0;
-  color: #6b7280;
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.98rem;
+  font-weight: 500;
+}
+
+.cm-course-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #f5f3ff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cm-hero-stat {
+  min-width: 180px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.cm-hero-stat-value {
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+}
+
+.cm-hero-stat-label {
+  display: block;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .cm-card {
-  background: #fff;
-  border-radius: 18px;
-  border: 1px solid #e8eaf0;
-  box-shadow: 0 6px 24px rgba(67, 56, 202, 0.08);
+  margin-top: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 26px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
   overflow: hidden;
 }
 
-.cm-empty {
-  margin: 0;
-  color: #6b7280;
-  font-weight: 600;
-  padding: 18px 20px;
+.cm-table-wrap {
+  overflow-x: auto;
 }
 
 .cm-table {
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
+  min-width: 920px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.92rem;
 }
 
 .cm-table thead tr {
-  background: linear-gradient(90deg, #5c35d9 0%, #7c5ce8 100%);
+  background: linear-gradient(90deg, #5b21b6 0%, #6d28d9 100%);
 }
 
 .cm-table th {
   text-align: left;
-  padding: 14px 16px;
-  font-size: 0.72rem;
+  padding: 18px 18px;
+  font-size: 0.76rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #fff;
   font-weight: 800;
+  white-space: nowrap;
+}
+
+.cm-table th:first-child {
+  border-top-left-radius: 22px;
+}
+
+.cm-table th:last-child {
+  border-top-right-radius: 22px;
 }
 
 .cm-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #eceff6;
-  color: #374151;
+  padding: 18px 18px;
+  border-bottom: 1px solid #ede9fe;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.cm-table tbody tr {
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .cm-table tbody tr:hover {
-  background: #faf7ff;
+  background: #faf5ff;
+}
+
+.cm-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .cm-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 36px;
-  height: 32px;
-  padding: 0 10px;
+  min-width: 40px;
+  height: 34px;
+  padding: 0 12px;
   border-radius: 999px;
-  background: #ede5ff;
-  color: #5c35d9;
+  background: #efe7ff;
+  color: #5b21b6;
   font-weight: 800;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+  box-shadow: inset 0 0 0 1px rgba(109, 40, 217, 0.12);
 }
 
 .cm-title-cell {
+  min-width: 280px;
   font-weight: 700;
-  color: #1f2937;
+  color: #1e293b;
+  line-height: 1.5;
 }
 
 .cm-link {
-  padding: 6px 12px;
-  border-radius: 10px;
-  border: none;
-  background: transparent;
-  color: #4c1d95;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid #d8b4fe;
+  background: #faf5ff;
+  color: #5b21b6;
   font-weight: 700;
   cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .cm-link:hover {
-  color: #5c35d9;
+  background: #f3e8ff;
   transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(109, 40, 217, 0.12);
 }
 
 .cm-link:disabled {
+  background: #f8fafc;
+  border-color: #e2e8f0;
   color: #c4b5fd;
   cursor: not-allowed;
+  box-shadow: none;
   transform: none;
 }
 
-@media (max-width: 880px) {
-  .cm-page { padding: 20px 14px 48px; }
-  .cm-table th, .cm-table td { padding: 12px 10px; }
+.cm-empty {
+  margin: 0;
+  padding: 28px 24px;
+  color: #64748b;
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .cm-page {
+    padding: 22px 18px 50px;
+  }
+
+  .cm-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cm-hero-stat {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .cm-page {
+    padding: 18px 12px 40px;
+  }
+
+  .cm-hero {
+    padding: 20px 18px;
+    border-radius: 22px;
+  }
+
+  .cm-course-badge {
+    font-size: 0.7rem;
+  }
+
+  .cm-card {
+    border-radius: 20px;
+  }
+
+  .cm-table th,
+  .cm-table td {
+    padding: 14px 12px;
+  }
 }

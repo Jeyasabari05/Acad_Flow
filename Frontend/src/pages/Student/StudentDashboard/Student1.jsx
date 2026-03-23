@@ -1,5 +1,4 @@
 // src/pages/Student/StudentDashboard/Student.jsx
-// ORIGINAL logic — untouched. Only UI/CSS classes updated.
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,25 +10,24 @@ const sum = (arr, key) => arr.reduce((s, c) => s + Number(c[key] || 0), 0);
 
 export default function Student() {
   const navigate = useNavigate();
-
   const normalizeDept = (code) => {
     const upper = String(code || "").toUpperCase();
-    if (upper === "CSE")   return "CS";
-    if (upper === "ECE")   return "EC";
-    if (upper === "EEE")   return "EE";
+    if (upper === "CSE") return "CS";
+    if (upper === "ECE") return "EC";
+    if (upper === "EEE") return "EE";
     if (upper === "CIVIL") return "CE";
-    if (upper === "CE")    return "CE";
+    if (upper === "CE") return "CE";
     return upper;
   };
 
   const { user } = useAuth();
-  const [sem, setSem]                       = useState(1);
-  const [studentName, setStudentName]       = useState("");
+  const [sem, setSem] = useState(1);
+  const [studentName, setStudentName] = useState("");
   const [departmentName, setDepartmentName] = useState("");
   const [departmentCode, setDepartmentCode] = useState("");
-  const [courses, setCourses]               = useState([]);
-  const [loading, setLoading]               = useState(false);
-  const [error, setError]                   = useState("");
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!user?.user_id) return;
@@ -37,8 +35,9 @@ export default function Student() {
       try {
         const response = await fetch(apiUrl(`/student/dashboard/${user.user_id}`));
         const data = await response.json();
-        if (!response.ok || !data.success)
+        if (!response.ok || !data.success) {
           throw new Error(data.message || "Failed to load student profile.");
+        }
         const profile = data.data || {};
         setStudentName(profile.name || user.name || user.user_id);
         setDepartmentCode(profile.departmentCode || "");
@@ -59,12 +58,15 @@ export default function Student() {
       setError("");
       try {
         const response = await fetch(
-          apiUrl(`/courses?department=${encodeURIComponent(normalizeDept(departmentCode))}&semester=${sem}`),
+          apiUrl(
+            `/courses?department=${encodeURIComponent(normalizeDept(departmentCode))}&semester=${sem}`
+          ),
           { signal: controller.signal }
         );
         const data = await response.json();
-        if (!response.ok || !data.success)
+        if (!response.ok || !data.success) {
           throw new Error(data.message || "Failed to load courses.");
+        }
         setCourses(Array.isArray(data.data) ? data.data : []);
       } catch (err) {
         if (err.name !== "AbortError") {
@@ -90,19 +92,24 @@ export default function Student() {
         C: Number(course.C || 0),
         type:
           String(course.courseType || course.type || "Core").toLowerCase() === "elective"
-            ? "elective" : "core",
+            ? "elective"
+            : "core",
       })),
     [courses]
   );
 
-  const core       = normalizedCourses.filter((c) => c.type === "core");
-  const elective   = normalizedCourses.filter((c) => c.type === "elective");
-  const totalC     = sum(core, "C") + sum(elective, "C");
+  const core = normalizedCourses.filter((c) => c.type === "core");
+  const elective = normalizedCourses.filter((c) => c.type === "elective");
+  const totalC = sum(core, "C") + sum(elective, "C");
   const minCredits = totalC;
 
   const initials = (studentName || user?.name || user?.user_id || "S")
-    .split(" ").filter(Boolean).slice(0, 2)
-    .map((p) => p.charAt(0)).join("").toUpperCase();
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join("")
+    .toUpperCase();
 
   const CourseTable = ({ courses: list, type }) => (
     <table className="sd-table">
@@ -126,7 +133,9 @@ export default function Student() {
             style={{ cursor: "pointer" }}
           >
             <td className="sd-td-idx">{i + 1}</td>
-            <td><span className={`sd-code-chip ${type}`}>{c.code}</span></td>
+            <td>
+              <span className={`sd-code-chip ${type}`}>{c.code}</span>
+            </td>
             <td className="sd-td-name">{c.name}</td>
             <td className="sd-td-center">{c.L}</td>
             <td className="sd-td-center">{c.T}</td>
@@ -143,7 +152,9 @@ export default function Student() {
           <td className="sd-tfoot-val">{sum(list, "L")}</td>
           <td className="sd-tfoot-val">{sum(list, "T")}</td>
           <td className="sd-tfoot-val">{sum(list, "P")}</td>
-          <td className="sd-tfoot-val"><strong>{sum(list, "C")}</strong></td>
+          <td className="sd-tfoot-val">
+            <strong>{sum(list, "C")}</strong>
+          </td>
         </tr>
       </tfoot>
     </table>
@@ -151,7 +162,6 @@ export default function Student() {
 
   return (
     <div className="sd-page">
-
       {/* HERO */}
       <div className="sd-hero">
         <div className="sd-hero-pattern" />
@@ -189,7 +199,7 @@ export default function Student() {
       <div className="sd-sem-bar">
         <span className="sd-sem-label">Semester</span>
         <div className="sd-sem-tabs">
-          {[1,2,3,4,5,6,7,8].map((s) => (
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
             <button
               key={s}
               onClick={() => setSem(s)}
@@ -205,7 +215,7 @@ export default function Student() {
       {/* INFO STRIP */}
       <div className="sd-strip">
         <div className="sd-strip-item">
-          <span className="sd-strip-icon">📚</span>
+          <span className="sd-strip-icon">??</span>
           <div>
             <div className="sd-strip-val">{core.length}</div>
             <div className="sd-strip-lbl">Core Courses</div>
@@ -213,7 +223,7 @@ export default function Student() {
         </div>
         <div className="sd-strip-sep" />
         <div className="sd-strip-item">
-          <span className="sd-strip-icon">🎓</span>
+          <span className="sd-strip-icon">??</span>
           <div>
             <div className="sd-strip-val">{elective.length}</div>
             <div className="sd-strip-lbl">Elective Courses</div>
@@ -221,7 +231,7 @@ export default function Student() {
         </div>
         <div className="sd-strip-sep" />
         <div className="sd-strip-item">
-          <span className="sd-strip-icon">⭐</span>
+          <span className="sd-strip-icon">?</span>
           <div>
             <div className="sd-strip-val">{sum(core, "C")}</div>
             <div className="sd-strip-lbl">Core Credits</div>
@@ -229,15 +239,15 @@ export default function Student() {
         </div>
         <div className="sd-strip-sep" />
         <div className="sd-strip-item">
-          <span className="sd-strip-icon">✨</span>
+          <span className="sd-strip-icon">?</span>
           <div>
-            <div className="sd-strip-val">{sum(elective, "C") || 0}</div>
+            <div className="sd-strip-val">{sum(elective, "C") || "�"}</div>
             <div className="sd-strip-lbl">Elective Credits</div>
           </div>
         </div>
         <div className="sd-strip-sep" />
         <div className="sd-strip-item">
-          <span className="sd-strip-icon">🎯</span>
+          <span className="sd-strip-icon">??</span>
           <div>
             <div className="sd-strip-val">{minCredits}</div>
             <div className="sd-strip-lbl">Min. Credits to Earn</div>
@@ -253,7 +263,7 @@ export default function Student() {
             <div>
               <h2 className="sd-section-title">Core Courses</h2>
               <p className="sd-section-sub">
-                Semester {sem} · {core.length} subjects · {sum(core, "C")} credits
+                Semester {sem} � {core.length} subjects � {sum(core, "C")} credits
               </p>
             </div>
           </div>
@@ -273,7 +283,7 @@ export default function Student() {
               <div>
                 <h2 className="sd-section-title">Professional Electives</h2>
                 <p className="sd-section-sub">
-                  Semester {sem} · {elective.length} subjects · {sum(elective, "C")} credits
+                  Semester {sem} � {elective.length} subjects � {sum(elective, "C")} credits
                 </p>
               </div>
             </div>
@@ -285,12 +295,13 @@ export default function Student() {
         </div>
       ) : (
         <div className="sd-no-elec">
-          <div className="sd-no-elec-icon">📭</div>
+          <div className="sd-no-elec-icon">??</div>
           <h3>No Elective Courses</h3>
           <p>Elective courses are offered from Semester 3 onwards.</p>
         </div>
       )}
-
     </div>
   );
 }
+
+

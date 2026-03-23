@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./CourseMaterials.css";
 import { apiUrl } from "../../../utils/api";
+import { createMaterialViewerToken, openMaterialUrl } from "../../../utils/materialLinks";
 
 const CourseMaterials = () => {
+  const navigate = useNavigate();
   const { courseId } = useParams();
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const fileBase = apiUrl("").replace(/\/api\/?$/, "");
-
   useEffect(() => {
     if (!courseId) return;
 
@@ -33,92 +33,111 @@ const CourseMaterials = () => {
     loadMaterials();
   }, [courseId]);
 
-  const resolveFileUrl = (url) => {
-    if (!url) return "";
-    if (/^https?:\/\//i.test(url)) return url;
-    if (url.startsWith("/")) return `${fileBase}${url}`;
-    return `${fileBase}/uploads/${url}`;
-  };
-
-  const handleView = (url) => {
-    const resolved = resolveFileUrl(url);
-    if (!resolved) return;
-    window.open(resolved, "_blank", "noopener,noreferrer");
+  const handleView = async (url) => {
+    if (!url) return;
+    try {
+      const token = createMaterialViewerToken(url, {
+        title: `Course ${courseId} PDF`,
+        subtitle: "Approved lecture material",
+        returnTo: `/course-materials/${courseId}`,
+      });
+      if (!token) throw new Error("Missing material");
+      navigate(`/material-viewer/${token}`);
+    } catch (err) {
+      try {
+        await openMaterialUrl(url);
+      } catch {
+        setError("Unable to open the requested material.");
+      }
+    }
   };
 
   return (
     <div className="cm-page">
-      <div className="cm-header">
-        <div>
-          <h1 className="cm-title">Course Materials</h1>
-          <p className="cm-sub">Course: {courseId}</p>
-        </div>
-      </div>
+      <div className="cm-shell">
+        <button type="button" className="cm-back-btn" onClick={() => navigate("/")}>
+          Back to Dashboard
+        </button>
 
-      {loading ? (
-        <div className="cm-card">
-          <p className="cm-empty">Loading materials...</p>
+        <div className="cm-hero">
+          <div className="cm-hero-copy">
+            <h1 className="cm-title">Course Materials</h1>
+            <p className="cm-sub">Approved lesson plans and lecture resources for this course.</p>
+            <div className="cm-course-badge">Course Code: {courseId}</div>
+          </div>
+          <div className="cm-hero-stat">
+            <span className="cm-hero-stat-value">{materials.length}</span>
+            <span className="cm-hero-stat-label">Available Lessons</span>
+          </div>
         </div>
-      ) : error ? (
-        <div className="cm-card">
-          <p className="cm-empty">{error}</p>
-        </div>
-      ) : materials.length === 0 ? (
-        <div className="cm-card">
-          <p className="cm-empty">No approved materials found.</p>
-        </div>
-      ) : (
-        <div className="cm-card">
-          <table className="cm-table">
-            <thead>
-              <tr>
-                <th>LP Number</th>
-                <th>Lesson Plan Title</th>
-                <th>Lecture Material</th>
-                <th>Lecture Video</th>
-                <th>Discourse Link</th>
-              </tr>
-            </thead>
-            <tbody>
-              {materials.map((m, idx) => (
-                <tr key={`${m.lessonNumber}-${idx}`}>
-                  <td>
-                    <span className="cm-pill">{m.lessonNumber}</span>
-                  </td>
-                  <td className="cm-title-cell">{m.lessonTitle}</td>
-                  <td>
-                    <button
-                      className="cm-link"
-                      onClick={() => handleView(m.pdfUrl)}
-                      disabled={!m.pdfUrl}
-                    >
-                      View PDF
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      className="cm-link"
-                      onClick={() => handleView(m.videoUrl)}
-                      disabled={!m.videoUrl}
-                    >
-                      View Video
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      className="cm-link"
-                      onClick={() => handleView(m.discourseUrl)}
-                      disabled={!m.discourseUrl}
-                    >
-                      View Discourse
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+
+        {loading ? (
+          <div className="cm-card">
+            <p className="cm-empty">Loading materials...</p>
+          </div>
+        ) : error ? (
+          <div className="cm-card">
+            <p className="cm-empty">{error}</p>
+          </div>
+        ) : materials.length === 0 ? (
+          <div className="cm-card">
+            <p className="cm-empty">No approved materials found.</p>
+          </div>
+        ) : (
+          <div className="cm-card">
+            <div className="cm-table-wrap">
+              <table className="cm-table">
+                <thead>
+                  <tr>
+                    <th>LP Number</th>
+                    <th>Lesson Plan Title</th>
+                    <th>Lecture Material</th>
+                    <th>Lecture Video</th>
+                    <th>Discourse Link</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {materials.map((m, idx) => (
+                    <tr key={`${m.lessonNumber}-${idx}`}>
+                      <td>
+                        <span className="cm-pill">{m.lessonNumber}</span>
+                      </td>
+                      <td className="cm-title-cell">{m.lessonTitle}</td>
+                      <td>
+                        <button
+                          className="cm-link"
+                          onClick={() => handleView(m.pdfUrl)}
+                          disabled={!m.pdfUrl}
+                        >
+                          View PDF
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          className="cm-link"
+                          onClick={() => handleView(m.videoUrl)}
+                          disabled={!m.videoUrl}
+                        >
+                          View Video
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          className="cm-link"
+                          onClick={() => handleView(m.discourseUrl)}
+                          disabled={!m.discourseUrl}
+                        >
+                          View Discourse
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

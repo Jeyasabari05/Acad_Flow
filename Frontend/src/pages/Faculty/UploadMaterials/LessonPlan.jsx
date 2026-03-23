@@ -27,6 +27,7 @@ import { Edit, Delete, Add, ArrowBack, LibraryAddRounded, AutoDeleteRounded } fr
 import image from "../../../assets/images/empty_state_icon.png";
 import { useAuth } from "../../../context/AuthContext";
 import { apiUrl } from "../../../utils/api";
+import { createMaterialViewerToken, openMaterialUrl } from "../../../utils/materialLinks";
 import "./Upload.css";
 
 // ── shared sx helpers ─────────────────────────────────────────
@@ -39,6 +40,48 @@ const inputSx = {
     "&:hover fieldset": { borderColor: "#9c6edd" },
     "&.Mui-focused fieldset": { borderColor: "#673ab7", borderWidth: "2px" },
   },
+};
+
+const safeParseJson = (value, fallback) => {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(value);
+  } catch (error) {
+    return fallback;
+  }
+};
+
+const sanitizePlansForStorage = (plans) =>
+  (Array.isArray(plans) ? plans : []).map((plan) => ({
+    number: plan?.number || "",
+    name: plan?.name || "",
+    pdf: typeof plan?.pdf === "string" && plan.pdf.startsWith("data:") ? "" : plan?.pdf || "",
+    video: plan?.video || "",
+    discourse: plan?.discourse || "",
+    status: plan?.status || "Pending",
+  }));
+
+const persistLessonPlans = (key, plans) => {
+  try {
+    const sanitizedPlans = sanitizePlansForStorage(plans);
+    if (!sanitizedPlans.length) {
+      localStorage.removeItem(key);
+      return true;
+    }
+    localStorage.setItem(key, JSON.stringify(sanitizedPlans));
+    return true;
+  } catch (error) {
+    console.error("Failed to persist lesson plans locally:", error);
+    return false;
+  }
+};
+
+const persistStorageFlag = (key, value) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch (error) {
+    console.error(`Failed to persist storage flag ${key}:`, error);
+  }
 };
 
 function LessonPlan() {
@@ -67,9 +110,24 @@ function LessonPlan() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   useEffect(() => {
-    const storedPlans = JSON.parse(localStorage.getItem(storageKey(`lessonPlans-${unitNumber}`)));
+    const storedPlans = safeParseJson(
+      localStorage.getItem(storageKey(`lessonPlans-${unitNumber}`)),
+      []
+    );
     setLessonPlans(storedPlans || []);
   }, [unitNumber, storagePrefix]);
+
+  useEffect(() => {
+    if (routeCourseMappingId) {
+      const value = String(routeCourseMappingId);
+      setResolvedCourseMappingId(value);
+      localStorage.setItem(storageKey("currentCourseMappingId"), value);
+      return;
+    }
+
+    const storedCourseMappingId = localStorage.getItem(storageKey("currentCourseMappingId")) || "";
+    setResolvedCourseMappingId(storedCourseMappingId);
+  }, [routeCourseMappingId, storagePrefix]);
 
   useEffect(() => {
     const resolveCourseMapping = async () => {
@@ -101,29 +159,37 @@ function LessonPlan() {
         const filtered = (data.data || []).filter(
           (plan) => String(plan.unitNumber || "") === String(unitNumber)
         );
-        if (filtered.length) {
-          const mapped = filtered.map((plan) => ({
-            number: plan.lessonPlanNumber,
-            name: plan.lessonPlanTitle,
-            pdf: plan.pdfUrl || "",
-            video: plan.videoUrl || "",
-            discourse: plan.discourseUrl || "",
-            status: plan.status || "Pending",
-          }));
-          setLessonPlans(mapped);
-          localStorage.setItem(storageKey(`lessonPlans-${unitNumber}`), JSON.stringify(mapped));
+        const mapped = filtered.map((plan) => ({
+          number: plan.lessonPlanNumber,
+          name: plan.lessonPlanTitle,
+          pdf: plan.pdfUrl || "",
+          video: plan.videoUrl || "",
+          discourse: plan.discourseUrl || "",
+          status: plan.status || "Pending",
+        }));
+        setLessonPlans(mapped);
+        if (mapped.length > 0) {
+          persistLessonPlans(storageKey(`lessonPlans-${unitNumber}`), mapped);
+        } else {
+          localStorage.removeItem(storageKey(`lessonPlans-${unitNumber}`));
         }
       } catch (error) {
-        console.error("Failed to load lesson plans from backend");
+        console.error("Failed to load lesson plans from backend", error);
       }
     };
     fetchLessonPlans();
   }, [unitNumber, user?.user_id, storagePrefix]);
 
   useEffect(() => {
+    const lessonPlansKey = storageKey(`lessonPlans-${unitNumber}`);
+    const hasChangesKey = storageKey(`hasChanges-${unitNumber}`);
     if (lessonPlans.length > 0) {
-      localStorage.setItem(storageKey(`lessonPlans-${unitNumber}`), JSON.stringify(lessonPlans));
-      localStorage.setItem(storageKey(`hasChanges-${unitNumber}`), "true");
+      const saved = persistLessonPlans(lessonPlansKey, lessonPlans);
+      if (saved) {
+        persistStorageFlag(hasChangesKey, "true");
+      }
+    } else {
+      localStorage.removeItem(lessonPlansKey);
     }
   }, [lessonPlans, unitNumber, storagePrefix]);
 
@@ -210,7 +276,7 @@ function LessonPlan() {
     }
     const updatedPlans = lessonPlans.filter((p) => p.number !== planToDelete.number);
     setLessonPlans(updatedPlans);
-    localStorage.setItem(storageKey(`lessonPlans-${unitNumber}`), JSON.stringify(updatedPlans));
+    persistLessonPlans(storageKey(`lessonPlans-${unitNumber}`), updatedPlans);
     setSnackbar({ open: true, message: "Lesson plan deleted successfully!", severity: "error" });
     setDeleteDialogOpen(false);
   };
@@ -229,11 +295,35 @@ function LessonPlan() {
     { id: "status", label: "Status", minWidth: 130 },
     { id: "actions", label: "Actions", minWidth: 120 },
   ];
+  const tableColumnCount = columns.length;
 
   const statusColor = (s) =>
     s === "Approved" ? { bg: "#e8f5e9", color: "#1b5e20" } :
     s === "Rejected" ? { bg: "#ffebee", color: "#b71c1c" } :
     { bg: "#fff8e1", color: "#f57f17" };
+
+  const handleMaterialOpen = async (url, label) => {
+    if (!url) return;
+    try {
+      if (label === "PDF") {
+        const token = createMaterialViewerToken(url, {
+          title: `Unit ${unitNumber} Lesson PDF`,
+          subtitle: unitName || "Lesson plan material",
+          returnTo: `/lesson-plan/${unitNumber}`,
+        });
+        if (!token) throw new Error("Missing material");
+        navigate(`/material-viewer/${token}`);
+        return;
+      }
+      await openMaterialUrl(url);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: `Unable to open ${label}.`,
+        severity: "error",
+      });
+    }
+  };
 
   return (
     <Box className="lp-page">
@@ -358,7 +448,7 @@ function LessonPlan() {
             <TableBody>
               {lessonPlans.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                  <TableCell colSpan={tableColumnCount} align="center" sx={{ py: 6 }}>
                     <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
                       <img
                         src={image}
@@ -437,10 +527,9 @@ function LessonPlan() {
                       {/* PDF */}
                       <TableCell sx={{ padding: "14px 16px", textAlign: "center" }}>
                         {plan.pdf ? (
-                          <a
-                            href={plan.pdf}
-                            target="_blank"
-                            rel="noreferrer"
+                          <button
+                            type="button"
+                            onClick={() => handleMaterialOpen(plan.pdf, "PDF")}
                             style={{
                               fontWeight: 700,
                               fontSize: "0.84rem",
@@ -451,10 +540,13 @@ function LessonPlan() {
                               alignItems: "center",
                               gap: "4px",
                               textDecoration: "none",
+                              background: "transparent",
+                              border: "none",
+                              padding: 0,
                             }}
                           >
                             View PDF
-                          </a>
+                          </button>
                         ) : (
                           <Typography variant="body2" sx={{ color: "#cbd5e1", fontFamily: "'Outfit', sans-serif", fontSize: "0.82rem" }}>—</Typography>
                         )}
@@ -465,7 +557,7 @@ function LessonPlan() {
                         {plan.video ? (
                           <Typography
                             variant="body2"
-                            onClick={() => window.open(plan.video, "_blank")}
+                            onClick={() => handleMaterialOpen(plan.video, "video")}
                             sx={{
                               fontWeight: 700,
                               fontSize: "0.84rem",
@@ -490,7 +582,7 @@ function LessonPlan() {
                         {plan.discourse ? (
                           <Typography
                             variant="body2"
-                            onClick={() => window.open(plan.discourse, "_blank")}
+                            onClick={() => handleMaterialOpen(plan.discourse, "link")}
                             sx={{
                               fontWeight: 700,
                               fontSize: "0.84rem",

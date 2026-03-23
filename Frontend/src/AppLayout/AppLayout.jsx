@@ -16,6 +16,7 @@ import ComplaintReview from '../pages/Admin/ComplaintReview/ComplaintReview';
 import FacultyScoreMonitoring from '../pages/Admin/FacultyScoreMonitoring/FacultyScoreMonitoring';
 import LectureMaterialsMonitoring from '../pages/Admin/LectureMaterialsMonitoring/LectureMaterialsMonitoring';
 import LessonPlan from '../pages/Faculty/UploadMaterials/LessonPlan';
+import MaterialViewer from '../pages/Shared/MaterialViewer/MaterialViewer';
 import Login from '../components/LoginPage/Login';
 
 function AppLayout() {
@@ -135,6 +136,7 @@ function AppLayout() {
                     )}
 
                     {/* Catch-all route */}
+                    <Route path="/material-viewer/:token" element={<MaterialViewer />} />
                     <Route path="*" element={null} />
                 </Routes>
             </div>

@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./LectureMaterialsMonitoring.css";
 import { apiUrl } from "../../../utils/api";
+import { createMaterialViewerToken, openMaterialUrl } from "../../../utils/materialLinks";
 
 function getInitials(name = "") {
   return name
@@ -12,6 +14,7 @@ function getInitials(name = "") {
 }
 
 function LectureMaterialsMonitoring() {
+  const navigate = useNavigate();
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -100,6 +103,25 @@ function LectureMaterialsMonitoring() {
         m.id === id ? { ...m, approval_status: status, status, admin_feedback: reason || "" } : m
       )
     );
+  };
+
+  const handleOpenMaterial = async (url, label) => {
+    if (!url) return;
+    try {
+      if (label === "PDF") {
+        const token = createMaterialViewerToken(url, {
+          title: "Lecture Material PDF",
+          subtitle: "Admin review viewer",
+          returnTo: "/lecture-materials-monitoring",
+        });
+        if (!token) throw new Error("Missing material");
+        navigate(`/material-viewer/${token}`);
+        return;
+      }
+      await openMaterialUrl(url);
+    } catch (error) {
+      setError(`Unable to open ${label}.`);
+    }
   };
 
   const handleApprove = async (id) => {
@@ -282,17 +304,17 @@ function LectureMaterialsMonitoring() {
                       <td>{row.lessonNumber}</td>
                       <td>
                         {row.pdf ? (
-                          <button className="lm-link" onClick={() => window.open(row.pdf, "_blank")}>View PDF</button>
+                          <button className="lm-link" onClick={() => handleOpenMaterial(row.pdf, "PDF")}>View PDF</button>
                         ) : <span style={{ color: "#cbd5e1" }}>—</span>}
                       </td>
                       <td>
                         {row.video ? (
-                          <button className="lm-link" onClick={() => window.open(row.video, "_blank")}>View Video</button>
+                          <button className="lm-link" onClick={() => handleOpenMaterial(row.video, "video")}>View Video</button>
                         ) : <span style={{ color: "#cbd5e1" }}>—</span>}
                       </td>
                       <td>
                         {row.discourse ? (
-                          <button className="lm-link" onClick={() => window.open(row.discourse, "_blank")}>Open Link</button>
+                          <button className="lm-link" onClick={() => handleOpenMaterial(row.discourse, "link")}>Open Link</button>
                         ) : <span style={{ color: "#cbd5e1" }}>—</span>}
                       </td>
                       <td style={{ color: "#64748b", fontSize: "0.82rem" }}>{row.date}</td>
