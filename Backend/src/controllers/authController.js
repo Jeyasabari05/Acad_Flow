@@ -6,7 +6,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
 const GOOGLE_CALLBACK_URL =
-  process.env.GOOGLE_CALLBACK_URL || "http://localhost:4000/api/auth/google/callback";
+  process.env.GOOGLE_CALLBACK_URL || "https://acad-backend-ve2l.onrender.com/api/auth/google/callback";
 
 const encodeState = (payload) =>
   Buffer.from(JSON.stringify(payload)).toString("base64url");

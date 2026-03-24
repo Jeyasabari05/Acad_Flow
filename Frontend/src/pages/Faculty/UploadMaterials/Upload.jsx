@@ -77,7 +77,7 @@ function Upload() {
     const fetchCourses = async () => {
       if (!user?.user_id) return;
       try {
-        const response = await axios.get(`http://localhost:4000/api/faculty/wetting-faculty/${user.user_id}`);
+        const response = await axios.get(`https://acad-backend-ve2l.onrender.com/api/faculty/wetting-faculty/${user.user_id}`);
         setCourses(response.data.data);
         const firstCourse = response.data.data?.[0];
         if (firstCourse?.course_mapping_id) {
@@ -169,7 +169,7 @@ function Upload() {
           setSnackbar({ open: true, message: "Error: Course Mapping ID is missing.", severity: "error" });
           return;
         }
-        const response = await fetch("http://localhost:4000/api/faculty/unit-plans", {
+        const response = await fetch("https://acad-backend-ve2l.onrender.com/api/faculty/unit-plans", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(unitData),

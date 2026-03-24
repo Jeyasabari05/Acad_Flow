@@ -128,7 +128,7 @@ const FacultyAssign = () => {
   useEffect(() => {
     const fetchCount = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/admin/faculty-courses");
+        const response = await fetch("https://acad-backend-ve2l.onrender.com/api/admin/faculty-courses");
         const datacount = await response.json();
         setCount(datacount.data.length);
       } catch (err) {
@@ -145,8 +145,8 @@ const FacultyAssign = () => {
     const fetchData = async () => {
       try {
         const [coursesRes, facultiesRes] = await Promise.all([
-          fetch("http://localhost:4000/api/admin/courses"),
-          fetch("http://localhost:4000/api/admin/faculties"),
+          fetch("https://acad-backend-ve2l.onrender.com/api/admin/courses"),
+          fetch("https://acad-backend-ve2l.onrender.com/api/admin/faculties"),
         ]);
         if (!coursesRes.ok || !facultiesRes.ok) throw new Error("Failed to fetch data");
         const coursesData = await coursesRes.json();
@@ -239,7 +239,7 @@ const FacultyAssign = () => {
       deadline,
     };
     try {
-      const response = await fetch("http://localhost:4000/api/admin/update-assignment", {
+      const response = await fetch("https://acad-backend-ve2l.onrender.com/api/admin/update-assignment", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedAssignment),
@@ -268,7 +268,7 @@ const FacultyAssign = () => {
       deadline,
     };
     try {
-      const response = await fetch("http://localhost:4000/api/admin/assign-faculty", {
+      const response = await fetch("https://acad-backend-ve2l.onrender.com/api/admin/assign-faculty", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newAssignment),
@@ -290,7 +290,7 @@ const FacultyAssign = () => {
 
   const handleDelete = async (assignmentId) => {
     try {
-      const response = await axios.delete(`http://localhost:4000/api/admin/delete-assignment/:${assignmentId}`);
+      const response = await axios.delete(`https://acad-backend-ve2l.onrender.com/api/admin/delete-assignment/:${assignmentId}`);
       if (response.status === 200) console.log("Assignment deleted successfully.");
       else console.error("Failed to delete assignment.");
     } catch (error) {

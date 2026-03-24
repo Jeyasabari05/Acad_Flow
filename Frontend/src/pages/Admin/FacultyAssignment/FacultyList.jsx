@@ -33,7 +33,7 @@ const AssignedFacultiesTable = ({ onDelete, onEdit, onStatusChange }) => {
   // Fetch once on mount — no recursive self-call inside
   const fetchAssignments = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/admin/faculty-courses");
+      const response = await fetch("https://acad-backend-ve2l.onrender.com/api/admin/faculty-courses");
       const data = await response.json();
       if (data.success) {
         setAssignments(data.data);
@@ -82,7 +82,7 @@ const AssignedFacultiesTable = ({ onDelete, onEdit, onStatusChange }) => {
 
   const handleDelete = async (assignmentId) => {
     try {
-      const response = await axios.delete(`http://localhost:4000/api/admin/delete-assignment/${assignmentId}`);
+      const response = await axios.delete(`https://acad-backend-ve2l.onrender.com/api/admin/delete-assignment/${assignmentId}`);
       if (response.status !== 200) console.error("Failed to delete assignment.");
     } catch (error) {
       console.error("Error occurred during deletion:", error);
