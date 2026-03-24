@@ -28,6 +28,33 @@ export const openMaterialUrl = async (url) => {
   return true;
 };
 
+const triggerDownload = (href, fileName) => {
+  const link = document.createElement("a");
+  link.href = href;
+  link.download = fileName || "material.pdf";
+  link.rel = "noopener noreferrer";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+export const downloadMaterialUrl = async (url, fileName = "material.pdf") => {
+  const resolvedUrl = resolveMaterialUrl(url);
+  if (!resolvedUrl) return false;
+
+  if (resolvedUrl.startsWith("data:")) {
+    const response = await fetch(resolvedUrl);
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    triggerDownload(blobUrl, fileName);
+    window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 60000);
+    return true;
+  }
+
+  triggerDownload(resolvedUrl, fileName);
+  return true;
+};
+
 export const createMaterialViewerToken = (url, options = {}) => {
   const resolvedUrl = resolveMaterialUrl(url);
   if (!resolvedUrl) return "";

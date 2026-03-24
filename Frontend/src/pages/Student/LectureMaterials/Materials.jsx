@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Materials.css";
 import { apiUrl } from "../../../utils/api";
+import { downloadMaterialUrl, openMaterialUrl } from "../../../utils/materialLinks";
 
 const typeIcon = { PDF: "PDF", Video: "Video", Doc: "Doc" };
 const typeColor = {
@@ -49,11 +50,26 @@ const LectureMaterials = () => {
   });
 
   const handleView = (material) => {
-    if (material.file) {
-      window.open(material.file, "_blank", "noopener,noreferrer");
+    if (!material.file) {
+      alert("No file link available for this material.");
       return;
     }
-    alert("No file link available for this material.");
+    openMaterialUrl(material.file).catch(() => {
+      setError("Unable to open this material.");
+    });
+  };
+
+  const handleDownload = (material) => {
+    if (!material.file) {
+      alert("No file link available for this material.");
+      return;
+    }
+    const safeTitle = (material.title || "material")
+      .replace(/[^\w.-]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+    downloadMaterialUrl(material.file, `${safeTitle || "material"}.pdf`).catch(() => {
+      setError("Unable to download this material.");
+    });
   };
 
   return (
@@ -177,9 +193,14 @@ const LectureMaterials = () => {
                     </td>
                     <td className="lm-td-date">{m.date}</td>
                     <td>
-                      <button className="lm-view-btn" onClick={() => handleView(m)}>
-                        View
-                      </button>
+                      <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+                        <button className="lm-view-btn" onClick={() => handleView(m)}>
+                          View
+                        </button>
+                        <button className="lm-view-btn" onClick={() => handleDownload(m)}>
+                          Download
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

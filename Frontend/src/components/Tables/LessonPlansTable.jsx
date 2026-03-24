@@ -1,6 +1,5 @@
 // LessonPlansTable.js
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -17,10 +16,9 @@ import {
   Typography,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-import { createMaterialViewerToken, openMaterialUrl } from '../../utils/materialLinks';
+import { openMaterialUrl } from '../../utils/materialLinks';
 
 export default function LessonPlansTable({ lessonPlans, selectedUnitId, setEditingLesson, setEditLessonModalOpen, handleDeleteLessonPlan }) {
-  const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -48,28 +46,9 @@ export default function LessonPlansTable({ lessonPlans, selectedUnitId, setEditi
   const handleOpenPdf = async (material) => {
     if (!material) return;
     try {
-      if (material instanceof Blob) {
-        const blobUrl = URL.createObjectURL(material);
-        const token = createMaterialViewerToken(blobUrl, {
-          title: "Lesson Plan PDF",
-          subtitle: "Document viewer",
-        });
-        navigate(`/material-viewer/${token}`);
-        window.setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-        return;
-      }
-      const token = createMaterialViewerToken(material, {
-        title: "Lesson Plan PDF",
-        subtitle: "Document viewer",
-      });
-      if (!token) throw new Error("Missing material");
-      navigate(`/material-viewer/${token}`);
+      await openMaterialUrl(material);
     } catch (error) {
-      try {
-        await openMaterialUrl(material);
-      } catch (fallbackError) {
-        console.error("Unable to open PDF", fallbackError);
-      }
+      console.error("Unable to open PDF", error);
     }
   };
 

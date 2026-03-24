@@ -3,6 +3,15 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBookOpen,
+  faGraduationCap,
+  faLayerGroup,
+  faChartLine,
+  faBullseye,
+  faInbox,
+} from "@fortawesome/free-solid-svg-icons";
 import "./Student.css";
 import { useAuth } from "../../../context/AuthContext";
 import { apiUrl } from "../../../utils/api";
@@ -205,7 +214,7 @@ export default function Student() {
       {/* INFO STRIP */}
       <div className="sd-strip">
         <div className="sd-strip-item">
-          <span className="sd-strip-icon">📚</span>
+          <span className="sd-strip-icon"><FontAwesomeIcon icon={faBookOpen} /></span>
           <div>
             <div className="sd-strip-val">{core.length}</div>
             <div className="sd-strip-lbl">Core Courses</div>
@@ -213,7 +222,7 @@ export default function Student() {
         </div>
         <div className="sd-strip-sep" />
         <div className="sd-strip-item">
-          <span className="sd-strip-icon">🎓</span>
+          <span className="sd-strip-icon"><FontAwesomeIcon icon={faGraduationCap} /></span>
           <div>
             <div className="sd-strip-val">{elective.length}</div>
             <div className="sd-strip-lbl">Elective Courses</div>
@@ -221,7 +230,7 @@ export default function Student() {
         </div>
         <div className="sd-strip-sep" />
         <div className="sd-strip-item">
-          <span className="sd-strip-icon">⭐</span>
+          <span className="sd-strip-icon"><FontAwesomeIcon icon={faLayerGroup} /></span>
           <div>
             <div className="sd-strip-val">{sum(core, "C")}</div>
             <div className="sd-strip-lbl">Core Credits</div>
@@ -229,7 +238,7 @@ export default function Student() {
         </div>
         <div className="sd-strip-sep" />
         <div className="sd-strip-item">
-          <span className="sd-strip-icon">✨</span>
+          <span className="sd-strip-icon"><FontAwesomeIcon icon={faChartLine} /></span>
           <div>
             <div className="sd-strip-val">{sum(elective, "C") || 0}</div>
             <div className="sd-strip-lbl">Elective Credits</div>
@@ -237,7 +246,7 @@ export default function Student() {
         </div>
         <div className="sd-strip-sep" />
         <div className="sd-strip-item">
-          <span className="sd-strip-icon">🎯</span>
+          <span className="sd-strip-icon"><FontAwesomeIcon icon={faBullseye} /></span>
           <div>
             <div className="sd-strip-val">{minCredits}</div>
             <div className="sd-strip-lbl">Min. Credits to Earn</div>
@@ -285,7 +294,7 @@ export default function Student() {
         </div>
       ) : (
         <div className="sd-no-elec">
-          <div className="sd-no-elec-icon">📭</div>
+          <div className="sd-no-elec-icon"><FontAwesomeIcon icon={faInbox} /></div>
           <h3>No Elective Courses</h3>
           <p>Elective courses are offered from Semester 3 onwards.</p>
         </div>

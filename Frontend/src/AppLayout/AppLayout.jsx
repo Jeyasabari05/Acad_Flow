@@ -18,6 +18,7 @@ import LectureMaterialsMonitoring from '../pages/Admin/LectureMaterialsMonitorin
 import LessonPlan from '../pages/Faculty/UploadMaterials/LessonPlan';
 import MaterialViewer from '../pages/Shared/MaterialViewer/MaterialViewer';
 import Login from '../components/LoginPage/Login';
+import GoogleAuthCallback from '../components/LoginPage/GoogleAuthCallback';
 
 function AppLayout() {
     const navigate = useNavigate();
@@ -69,6 +70,9 @@ function AppLayout() {
 
     // If user is NOT logged in, show the login page
     if (!user) {
+        if (location.pathname === '/auth/google/callback') {
+            return <GoogleAuthCallback />;
+        }
         return <Login />;
     }
 

@@ -188,6 +188,7 @@
   gap: 7px;
   flex-wrap: nowrap;
   overflow: hidden;
+  color: rgba(255,255,255,0.96);
 }
 
 /* ME / CS / ECE tag */
@@ -211,9 +212,9 @@
 
 /* Department full name */
 .sd-hero-sub > *:not(.sd-dept-tag) {
-  color: rgba(255,255,255,0.58);
+  color: rgba(255,255,255,0.94);
   font-size: 0.76rem;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -412,7 +413,8 @@
 
 /* Icon — small violet circle, hides broken ?? */
 .sd-strip-icon {
-  font-size: 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 800;
   flex-shrink: 0;
   width: 36px;
   height: 36px;
@@ -422,8 +424,14 @@
   background: var(--v100);
   border: 1.5px solid var(--v200);
   border-radius: 9px;
+  color: var(--v600);
+  box-shadow: inset 0 0 0 1px rgba(92,53,217,0.05);
   transition: background 0.16s var(--ease), border-color 0.16s var(--ease);
   position: relative;
+}
+
+.sd-strip-icon svg {
+  font-size: 0.9rem;
 }
 
 
@@ -716,7 +724,21 @@
   transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 .sd-no-elec:hover { border-color: var(--v400); box-shadow: var(--sh-lg); }
-.sd-no-elec-icon  { font-size: 2.6rem; margin-bottom: 12px; display: block; animation: af-float 3s ease-in-out infinite; }
+.sd-no-elec-icon  {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--v100), #ede7ff);
+  border: 1.5px solid var(--v200);
+  color: var(--v600);
+  font-size: 1.3rem;
+  font-weight: 800;
+  box-shadow: 0 10px 24px rgba(92,53,217,0.10);
+}
 .sd-no-elec h3    { margin: 0 0 6px; font-size: 1rem; font-weight: 800; color: var(--ink); }
 .sd-no-elec p     { margin: 0; font-size: 0.84rem; color: var(--ink-4); font-weight: 500; }
 

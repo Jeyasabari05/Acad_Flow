@@ -185,8 +185,6 @@ function Faculty() {
     ? Math.round((approvedMaterials / stats.materialsCount) * 100)
     : 0;
 
-  const now = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
-
   return (
     <div className="fd-page">
 
@@ -196,14 +194,6 @@ function Faculty() {
           <p className="fd-eyebrow">Faculty Dashboard</p>
           <h1>Overview of your academic contributions</h1>
           <span className="fd-sub">Live stats from faculty, complaints, and materials modules.</span>
-        </div>
-        <div className="fd-profile">
-          <div className="fd-avatar">{(user?.name || "F").charAt(0)}</div>
-          <div>
-            <div className="fd-name">{user?.name || "Faculty"}</div>
-            <div className="fd-dept">{faculty?.department || "Department N/A"}</div>
-            <div className="fd-timestamp">{now}</div>
-          </div>
         </div>
       </div>
 

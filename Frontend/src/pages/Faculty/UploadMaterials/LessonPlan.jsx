@@ -27,7 +27,7 @@ import { Edit, Delete, Add, ArrowBack, LibraryAddRounded, AutoDeleteRounded } fr
 import image from "../../../assets/images/empty_state_icon.png";
 import { useAuth } from "../../../context/AuthContext";
 import { apiUrl } from "../../../utils/api";
-import { createMaterialViewerToken, openMaterialUrl } from "../../../utils/materialLinks";
+import { openMaterialUrl } from "../../../utils/materialLinks";
 import "./Upload.css";
 
 // ── shared sx helpers ─────────────────────────────────────────
@@ -305,16 +305,6 @@ function LessonPlan() {
   const handleMaterialOpen = async (url, label) => {
     if (!url) return;
     try {
-      if (label === "PDF") {
-        const token = createMaterialViewerToken(url, {
-          title: `Unit ${unitNumber} Lesson PDF`,
-          subtitle: unitName || "Lesson plan material",
-          returnTo: `/lesson-plan/${unitNumber}`,
-        });
-        if (!token) throw new Error("Missing material");
-        navigate(`/material-viewer/${token}`);
-        return;
-      }
       await openMaterialUrl(url);
     } catch (error) {
       setSnackbar({

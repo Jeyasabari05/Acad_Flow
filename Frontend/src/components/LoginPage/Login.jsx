@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import authImage from "../../assets/images/auth.png";
 import logoImage from "../../assets/images/logo.png";
 import "./Login.css";
@@ -72,10 +70,6 @@ const Login = () => {
     setLoading(false);
   };
 
-  const handleGoogleLogin = () => {
-    alert("Google login not changed");
-  };
-
   return (
     <div className="login-wrapper">
       <div className="login-container">
@@ -139,17 +133,6 @@ const Login = () => {
               disabled={loading}
             >
               {loading ? "Signing in..." : "Login"}
-            </button>
-
-            <div className="or-divider">OR</div>
-
-            <button
-              type="button"
-              className="login-button-google"
-              onClick={handleGoogleLogin}
-            >
-              <FontAwesomeIcon icon={faGoogle} className="google-icon" />
-              Sign in with Google
             </button>
           </form>
         </div>

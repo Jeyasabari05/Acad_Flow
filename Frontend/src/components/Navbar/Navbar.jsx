@@ -205,7 +205,7 @@ React.useEffect(() => {
     Student: [
       { text: 'Student Dashboard', icon: <DashboardRoundedIcon />, link: '/' },
       { text: 'Complaint Status', icon: <CloudDownload />, link: '/ComplaintStatus' },
-      { text: 'Lecture Materials', icon: <LibraryBooks />, link: '/lecture-materials' }
+      
     ],
     Faculty: [
       { text: 'Faculty Dashboard', icon: <DashboardRoundedIcon />, link: '/' },

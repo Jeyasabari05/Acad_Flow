@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./CourseMaterials.css";
 import { apiUrl } from "../../../utils/api";
-import { createMaterialViewerToken, openMaterialUrl } from "../../../utils/materialLinks";
+import { downloadMaterialUrl, openMaterialUrl } from "../../../utils/materialLinks";
 
 const CourseMaterials = () => {
   const navigate = useNavigate();
@@ -33,22 +33,24 @@ const CourseMaterials = () => {
     loadMaterials();
   }, [courseId]);
 
-  const handleView = async (url) => {
+  const handleView = async (url, label = "material") => {
     if (!url) return;
     try {
-      const token = createMaterialViewerToken(url, {
-        title: `Course ${courseId} PDF`,
-        subtitle: "Approved lecture material",
-        returnTo: `/course-materials/${courseId}`,
-      });
-      if (!token) throw new Error("Missing material");
-      navigate(`/material-viewer/${token}`);
+      await openMaterialUrl(url);
     } catch (err) {
-      try {
-        await openMaterialUrl(url);
-      } catch {
-        setError("Unable to open the requested material.");
-      }
+      setError(`Unable to open the requested ${label}.`);
+    }
+  };
+
+  const handleDownload = async (url, lessonTitle) => {
+    if (!url) return;
+    try {
+      const safeTitle = (lessonTitle || `course-${courseId}-material`)
+        .replace(/[^\w.-]+/g, "_")
+        .replace(/^_+|_+$/g, "");
+      await downloadMaterialUrl(url, `${safeTitle || "material"}.pdf`);
+    } catch (err) {
+      setError("Unable to download the requested PDF.");
     }
   };
 
@@ -104,18 +106,31 @@ const CourseMaterials = () => {
                       </td>
                       <td className="cm-title-cell">{m.lessonTitle}</td>
                       <td>
-                        <button
-                          className="cm-link"
-                          onClick={() => handleView(m.pdfUrl)}
-                          disabled={!m.pdfUrl}
-                        >
-                          View PDF
-                        </button>
+                        {m.pdfUrl ? (
+                          <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
+                            <button
+                              className="cm-link"
+                              onClick={() => handleView(m.pdfUrl, "PDF")}
+                            >
+                              View PDF
+                            </button>
+                            <button
+                              className="cm-link"
+                              onClick={() => handleDownload(m.pdfUrl, m.lessonTitle)}
+                            >
+                              Download PDF
+                            </button>
+                          </div>
+                        ) : (
+                          <button className="cm-link" disabled>
+                            View PDF
+                          </button>
+                        )}
                       </td>
                       <td>
                         <button
                           className="cm-link"
-                          onClick={() => handleView(m.videoUrl)}
+                          onClick={() => handleView(m.videoUrl, "video")}
                           disabled={!m.videoUrl}
                         >
                           View Video
@@ -124,7 +139,7 @@ const CourseMaterials = () => {
                       <td>
                         <button
                           className="cm-link"
-                          onClick={() => handleView(m.discourseUrl)}
+                          onClick={() => handleView(m.discourseUrl, "link")}
                           disabled={!m.discourseUrl}
                         >
                           View Discourse

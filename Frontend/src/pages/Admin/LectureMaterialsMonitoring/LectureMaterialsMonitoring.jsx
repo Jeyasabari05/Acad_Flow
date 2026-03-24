@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./LectureMaterialsMonitoring.css";
 import { apiUrl } from "../../../utils/api";
-import { createMaterialViewerToken, openMaterialUrl } from "../../../utils/materialLinks";
+import { openMaterialUrl } from "../../../utils/materialLinks";
 
 function getInitials(name = "") {
   return name
@@ -14,7 +13,6 @@ function getInitials(name = "") {
 }
 
 function LectureMaterialsMonitoring() {
-  const navigate = useNavigate();
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -108,16 +106,6 @@ function LectureMaterialsMonitoring() {
   const handleOpenMaterial = async (url, label) => {
     if (!url) return;
     try {
-      if (label === "PDF") {
-        const token = createMaterialViewerToken(url, {
-          title: "Lecture Material PDF",
-          subtitle: "Admin review viewer",
-          returnTo: "/lecture-materials-monitoring",
-        });
-        if (!token) throw new Error("Missing material");
-        navigate(`/material-viewer/${token}`);
-        return;
-      }
       await openMaterialUrl(url);
     } catch (error) {
       setError(`Unable to open ${label}.`);

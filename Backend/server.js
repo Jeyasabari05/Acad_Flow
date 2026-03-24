@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const passport = require("passport");
 const { config, db } = require("./src/config/config.js");
 const adminRoutes = require("./src/routes/adminRoutes");
 const authRoutes = require("./src/routes/authRoutes");
@@ -16,6 +17,7 @@ const cors = require("cors");
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(passport.initialize());
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

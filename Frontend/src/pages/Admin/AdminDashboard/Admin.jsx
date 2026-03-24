@@ -157,8 +157,6 @@ function Admin() {
 
   const PIE_COLORS = ["#10b981", "#f59e0b", "#ef4444", "#5c35d9"];
 
-  const now = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
-
   return (
     <div className="ad-page">
 
@@ -168,13 +166,6 @@ function Admin() {
           <p className="ad-eyebrow">Admin Dashboard</p>
           <h1>Institution Control Center</h1>
           <span>Monitor key academic signals across departments.</span>
-        </div>
-        <div className="ad-header-right">
-          <div className={`ad-status ${loading ? "syncing" : "live"}`}>
-            <span className="ad-status-dot" />
-            {loading ? "Syncing data…" : "Live data connected"}
-          </div>
-          <div className="ad-timestamp">Updated: {now}</div>
         </div>
       </div>
 
