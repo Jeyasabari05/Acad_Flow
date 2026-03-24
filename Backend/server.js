@@ -23,10 +23,29 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(
   cors({
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Health check route — confirms deployment is live
+app.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Server is running successfully",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development",
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Server and database are running successfully",
+    timestamp: new Date().toISOString(),
+  });
+});
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
@@ -35,24 +54,31 @@ app.use("/api/faculty", facultyRoutes);
 app.use("/api/materials", materialsRoutes);
 app.use("/api/student", studentRoutes);
 
-// Verify DB connection before starting server.
-  db.query("SELECT 1")
-  .then(async () => {
-    await initializeComplaintTables();
-    await initializeLessonPlanTables();
-    await initializeCourseTable();
-    await seedCoursesIfEmpty();
-    console.log("Database connection verified.");
+// Use PORT from environment (Render sets this automatically)
+const PORT = process.env.PORT || config.server.port || 3000;
 
-    app.listen(config.server.port, () => {
-      console.log(`Server running on http://localhost:${config.server.port}`);
+db.query("SELECT 1")
+  .then(async () => {
+    console.log("✅ Database connection verified.");
+
+    await initializeComplaintTables();
+    console.log("✅ Complaint tables initialized.");
+
+    await initializeLessonPlanTables();
+    console.log("✅ Lesson plan tables initialized.");
+
+    await initializeCourseTable();
+    console.log("✅ Course table initialized.");
+
+    await seedCoursesIfEmpty();
+    console.log("✅ Course seeding done.");
+
+    app.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT}`);
+      console.log(`✅ Environment: ${process.env.NODE_ENV || "development"}`);
     });
   })
   .catch((err) => {
-    console.error("Database connection error:", err.message);
+    console.error("❌ Database connection error:", err.message);
     process.exit(1);
   });
-
-app.get("/", (req, res) => {
-  res.send("Server and database are running successfully.");
-});
